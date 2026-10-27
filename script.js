@@ -1,6 +1,9 @@
 const FIXED_IBAN="BH71ALSA00447084100100";
-const FIRST_EN="Dalil-In W.L.L",FIRST_AR="دليل ان ذ.م.م";
+const FIRST_EN="Dalilin W.L.L",FIRST_AR="دليل ان ذ.م.م";
 const $=id=>document.getElementById(id);
+/* تخزين المكتبات والنماذج في المتصفح: تُنزَّل مرة واحدة فقط ثم تعمل من الذاكرة */
+if("serviceWorker" in navigator)window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})});
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 let files=[];
 try{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}catch(e){}
 
