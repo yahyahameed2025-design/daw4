@@ -3,6 +3,19 @@ const PADDLE_HF="https://huggingface.co/monkt/paddleocr-onnx/resolve/main/langua
 const ORT_WASM="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.1/dist/";
 const PADDLE_DIR={ar:"arabic/",en:"english/"};
 const paddleModels={};
+/* تنزيل مع حفظ دائم في Cache Storage: المرة الأولى فقط تحتاج إنترنت */
+async function cachedFetch(url){
+  try{
+    if(window.caches){
+      const c=await caches.open("paddle-models-v1"),hit=await c.match(url);
+      if(hit)return hit;
+      const r=await fetch(url);
+      if(r.ok)await c.put(url,r.clone());
+      return r;
+    }
+  }catch(e){}
+  return fetch(url);
+}
 
 async function loadRec(lang){
   if(paddleModels[lang])return paddleModels[lang];
@@ -11,8 +24,8 @@ async function loadRec(lang){
   ort.env.wasm.wasmPaths=ORT_WASM;
   const base=PADDLE_HF+PADDLE_DIR[lang];
   const [m,d]=await Promise.all([
-    fetch(base+"rec.onnx").then(r=>{if(!r.ok)throw new Error("تعذّر تحميل نموذج PaddleOCR ("+r.status+")");return r.arrayBuffer()}),
-    fetch(base+"dict.txt").then(r=>{if(!r.ok)throw new Error("تعذّر تحميل قاموس الحروف ("+r.status+")");return r.text()})
+    cachedFetch(base+"rec.onnx").then(r=>{if(!r.ok)throw new Error("تعذّر تحميل نموذج PaddleOCR ("+r.status+")");return r.arrayBuffer()}),
+    cachedFetch(base+"dict.txt").then(r=>{if(!r.ok)throw new Error("تعذّر تحميل قاموس الحروف ("+r.status+")");return r.text()})
   ]);
   const dict=d.split("\n").map(s=>s.replace(/\r$/,""));
   if(dict.length&&dict[dict.length-1]==="")dict.pop();
