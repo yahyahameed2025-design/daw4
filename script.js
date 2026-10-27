@@ -165,6 +165,8 @@ function items(v){
   // page 1: التمهيد (اسم الشركة الأول بدون شرطة)
   T(0,"Dalilin W.L.L, a limited liability company specialized in wholesale",[115,333.2,302,341.9],[115,333.2,302,341.9],0,"l",1);
   T(0,"Dalilin)",[277.8,342.3,302,351],[277.8,342.3,302,351],0,"l",1);
+  // page 1: التعريفات (Dalil-In بدون شرطة)
+  T(0,"Dalilin Company- Second Party: The Subscriber (whether a",[115.5,167.9,300.5,177.5],[115.5,167.9,300.5,177.5],0,"l",1);
   // page 1: English
   T(0,v.nameEn,[124.9,238.8,194.5,246.7],[125,237.8,315,247.7],0,"l");
   T(0,v.addrEn,[75,248.9,257.4,256.7],[75,247.9,330,257.7],0,"l");
