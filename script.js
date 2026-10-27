@@ -139,11 +139,11 @@ function words(n){
 
 /* ---------- PDF overlay ---------- */
 const H=841.89;
-function textPng(txt,w,h,rtl,align,maxW){
+function textPng(txt,w,h,rtl,align,maxW,bold){
   const S=5,c=document.createElement("canvas");c.width=Math.ceil(maxW*S);c.height=Math.ceil(h*S);
   const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
   let fs=h*S*.85;x.direction=rtl?"rtl":"ltr";
-  const f=s=>`${s}px Tahoma, Arial, sans-serif`;
+  const f=s=>`${bold?"bold ":""}${s}px Tahoma, Arial, sans-serif`;
   x.font=f(fs);while(x.measureText(txt).width>c.width-4&&fs>8){fs-=2;x.font=f(fs)}
   x.fillStyle="#000";x.textBaseline="middle";
   const tw=x.measureText(txt).width;
@@ -156,12 +156,15 @@ function textPng(txt,w,h,rtl,align,maxW){
 function items(v){
   const w=words(parseFloat(v.com)),n=v.com;
   const L=[];
-  const T=(pg,t,cov,area,rtl,al)=>{if(t)L.push({pg,t,cov,area,rtl,al})};
+  const T=(pg,t,cov,area,rtl,al,b)=>{if(t)L.push({pg,t,cov,area,rtl,al,b})};
   // page 1: الطرف الأول (الاسم + اسم الحساب البنكي)
   T(0,": "+FIRST_EN,[113.9,197.8,200,207.8],[113.9,197.8,200,207.8],0,"l");
   T(0,"( "+FIRST_AR+" ) :",[380,209.6,476,219],[380,209.6,476,219],1,"r");
   T(0,FIRST_EN,[94.8,297.4,223.4,307.6],[94.8,297.4,223.4,307.6],0,"l");
   T(0,FIRST_AR,[393.4,322,521.5,330.6],[393.4,322,521.5,330.6],1,"r");
+  // page 1: التمهيد (اسم الشركة الأول بدون شرطة)
+  T(0,"Dalilin W.L.L, a limited liability company specialized in wholesale",[115,333.2,302,341.9],[115,333.2,302,341.9],0,"l",1);
+  T(0,"Dalilin)",[277.8,342.3,302,351],[277.8,342.3,302,351],0,"l",1);
   // page 1: English
   T(0,v.nameEn,[124.9,238.8,194.5,246.7],[125,237.8,315,247.7],0,"l");
   T(0,v.addrEn,[75,248.9,257.4,256.7],[75,247.9,330,257.7],0,"l");
@@ -206,7 +209,7 @@ async function build(v){
   const doc=await PDFDocument.load(bytes),pages=doc.getPages();
   for(const it of items(v)){
     const [ax0,ay0,ax1,ay1]=it.area,aw=ax1-ax0,ah=ay1-ay0;
-    const cv=textPng(it.t,aw,ah,it.rtl,it.al,aw);
+    const cv=textPng(it.t,aw,ah,it.rtl,it.al,aw,it.b);
     const png=await new Promise(r=>cv.toBlob(r,"image/png"));
     const img=await doc.embedPng(new Uint8Array(await png.arrayBuffer()));
     pages[it.pg].drawImage(img,{x:ax0,y:H-ay1,width:aw,height:ah});
